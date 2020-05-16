@@ -32,4 +32,8 @@ public class UsersService {
     public Optional<User> getUserById(int id){
         return usersDao.getUserById(id);
     }
+
+    public void updateUserById(int id, User user){
+        usersDao.updateUserById(id, user);
+    }
 }

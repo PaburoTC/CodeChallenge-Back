@@ -37,7 +37,11 @@ public class UsersController {
     @GetMapping(path ="getuserById/{id}")
     public User getUserById(@PathVariable("id") int id){
         return usersService.getUserById(id).orElse(null);
+    }
 
+    @PutMapping(path = "updateUsersById/{id}")
+    public void updateUserById(@PathVariable("id") int id, @RequestBody User user){
+        usersService.updateUserById(id,user);
     }
 
 }
