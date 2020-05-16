@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class UsersService {
@@ -21,5 +22,9 @@ public class UsersService {
 
     public List<User> getUsers(){
         return usersDao.getUsers();
+    }
+
+    public Optional<User> getUserById(int id){
+        return usersDao.getUserById(id);
     }
 }

@@ -43,7 +43,18 @@ public class UsersDataAccessService implements IUsersDao{
 
     @Override
     public Optional<User> getUserById(int id) {
-        return Optional.empty();
+        final String sql = "SELECT * FROM users WHERE id = ?";
+        User user = jdbcTemplate.queryForObject(sql, new Object[]{id}, ((resultSet, i) -> {
+            String name = resultSet.getString("name");
+            String email = resultSet.getString("email");
+            Date birthdate = resultSet.getDate("birthdate");
+            int address_id = resultSet.getInt("address_id");
+            Optional<Address> address = getAddresById(address_id);
+            User u = new User(name,email,birthdate,address.orElse(null));
+            u.setId(id);
+            return u;
+        }));
+        return Optional.ofNullable(user);
     }
 
     @Override
