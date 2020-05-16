@@ -24,6 +24,10 @@ public class UsersService {
         return usersDao.getUsers();
     }
 
+
+    public void createUser(User user){
+        usersDao.createUser(user);
+
     public Optional<User> getUserById(int id){
         return usersDao.getUserById(id);
     }
