@@ -4,10 +4,19 @@ import CloudAppi.CodeChallengeBack.model.Address;
 import CloudAppi.CodeChallengeBack.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.PreparedStatementCreator;
+import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
+import org.springframework.jdbc.core.namedparam.SqlParameterSource;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
+import java.sql.Connection;
 import java.sql.Date;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @Repository("postgres")
@@ -38,11 +47,9 @@ public class UsersDataAccessService implements IUsersDao{
 
     @Override
     public void createUser(User user) {
-        System.out.println(user.getAddress());
-        Address address = getAddres(user.getAddress()).orElse(null);
-
-        int address_id = (address==null) ? createAddress(user.getAddress()): address.getId();
-
+        createAddress(user.getAddress());
+        int address_id = getAddres(user.getAddress()).orElse(null).getId();
+        System.out.println(address_id);
         final String sql = "INSERT INTO users (name,email,birthdate,address_id) VALUES (?,?,?,?)";
         jdbcTemplate.update(sql, user.getName(), user.getEmail(), user.getBirthdate(), address_id);
     }
@@ -81,8 +88,8 @@ public class UsersDataAccessService implements IUsersDao{
 
     private Optional<Address> getAddres(Address address){
         final String sql_address = "SELECT * FROM address WHERE street = ? AND state = ? AND city = ? AND country = ? AND zip = ?";
-        Address address1 = jdbcTemplate.queryForObject(sql_address, new Object[]{address.getStreet(),address.getState(),address.getCity(),address.getCountry(),address.getZip()},
-                ((resultSet, i) -> {
+        List<Address> address1 = jdbcTemplate.query(sql_address, new Object[]{address.getStreet(),address.getState(),address.getCity(),address.getCountry(),address.getZip()},
+                ((resultSet,i) -> {
                     String street = resultSet.getString("street");
                     String state = resultSet.getString("state");
                     String city = resultSet.getString("city");
@@ -94,11 +101,25 @@ public class UsersDataAccessService implements IUsersDao{
                     return  addrss;
         }));
 
-        return Optional.ofNullable(address1);
+        return Optional.ofNullable(address1.get(address1.size()-1));
     }
 
-    private int createAddress(Address address){
-        final String sql = "INSERT INTO address (street,state,city,country,zip) VALUES (?,?,?,?,?) RETURNING id";
-        return jdbcTemplate.update(sql, address.getStreet(),address.getState(),address.getCity(),address.getCountry(),address.getZip());
+    /**
+     * Mi intención era que este método devolviera el su ID para poder relacionarlo con el usuario correspondiente.
+     * Lo he intentado mediante el uso de un KeyHolder pero no lo he logrado. Es por esto que para hallar el id hago
+     * una segunda query para encontrar el último Address con las carácterísticas del que acabamos de insertar
+     * @param address
+     */
+    private void createAddress(Address address){
+        final String sql = "INSERT INTO address (street,state,city,country,zip) VALUES (?,?,?,?,?)";
+        jdbcTemplate.update(connection -> {
+            PreparedStatement ps = connection.prepareStatement(sql);
+            ps.setString(1,address.getStreet());
+            ps.setString(2,address.getState());
+            ps.setString(3,address.getCity());
+            ps.setString(4,address.getCountry());
+            ps.setString(5,address.getZip());
+            return ps;
+        });
     }
 }
