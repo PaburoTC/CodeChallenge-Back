@@ -1,6 +1,9 @@
+#Lo suyo hubiera sido ocultar estas claves y no haberlas subido al repo, pero os las dejo por si quereis comprobar el estado de la base de datos
+
 app:
   datasource:
     jdbc-url: jdbc:postgresql://ec2-18-195-237-200.eu-central-1.compute.amazonaws.com:5432/cloudappi
     username: postgres
     password: password
     pool-size: 30
+

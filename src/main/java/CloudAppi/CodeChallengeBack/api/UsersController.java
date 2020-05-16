@@ -10,6 +10,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 
+import javax.crypto.BadPaddingException;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
+import java.security.InvalidAlgorithmParameterException;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
 import java.util.List;
 
 @RequestMapping("users")
@@ -24,22 +30,22 @@ public class UsersController {
     }
 
     @GetMapping(path ="getusers")
-    public List<User> getUsers(){
+    public List<User> getUsers() throws IllegalBlockSizeException, BadPaddingException, InvalidAlgorithmParameterException, InvalidKeyException {
         return usersService.getUsers();
     }
 
     @PostMapping(path = "createUser")
-    public void createUser(@RequestBody User user) {
+    public void createUser(@RequestBody User user) throws NoSuchPaddingException, InvalidKeyException, NoSuchAlgorithmException, IllegalBlockSizeException, BadPaddingException, InvalidAlgorithmParameterException {
         usersService.createUser(user);
     }
 
     @GetMapping(path ="getuserById/{id}")
-    public User getUserById(@PathVariable("id") int id){
+    public User getUserById(@PathVariable("id") int id) throws IllegalBlockSizeException, BadPaddingException, InvalidAlgorithmParameterException, InvalidKeyException {
         return usersService.getUserById(id).orElse(null);
     }
 
     @PutMapping(path = "updateUsersById/{id}")
-    public void updateUserById(@PathVariable("id") int id, @RequestBody User user){
+    public void updateUserById(@PathVariable("id") int id, @RequestBody User user) throws NoSuchPaddingException, InvalidKeyException, NoSuchAlgorithmException, IllegalBlockSizeException, BadPaddingException, InvalidAlgorithmParameterException {
         usersService.updateUserById(id,user);
     }
 
