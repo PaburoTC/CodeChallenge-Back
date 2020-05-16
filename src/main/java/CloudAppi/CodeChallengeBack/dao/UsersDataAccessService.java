@@ -49,7 +49,6 @@ public class UsersDataAccessService implements IUsersDao{
     public void createUser(User user) {
         createAddress(user.getAddress());
         int address_id = getAddres(user.getAddress()).orElse(null).getId();
-        System.out.println(address_id);
         final String sql = "INSERT INTO users (name,email,birthdate,address_id) VALUES (?,?,?,?)";
         jdbcTemplate.update(sql, user.getName(), user.getEmail(), user.getBirthdate(), address_id);
     }
