@@ -71,8 +71,30 @@ public class UsersDataAccessService implements IUsersDao{
     }
 
     @Override
-    public void updateUserById(int id) {
+    public void updateUserById(int id, User user) {
+        int address_index = Objects.requireNonNull(getUserById(id).orElse(null)).getAddress().getId();
+        final String sqlUser = "UPDATE users SET name = ?, email = ?, birthdate = ? WHERE id = ?";
+        jdbcTemplate.update(connection -> {
+            PreparedStatement ps = connection.prepareStatement(sqlUser);
+            ps.setString(1,user.getName());
+            ps.setString(2,user.getEmail());
+            ps.setDate(3, user.getBirthdate());
+            ps.setInt(4, id);
+            return ps;
+        });
 
+        final String sqlAddress = "UPDATE address SET street = ?, state = ?, city = ?, country = ?, zip = ? WHERE id = ?";
+        Address address = user.getAddress();
+        jdbcTemplate.update(connection -> {
+            PreparedStatement ps = connection.prepareStatement(sqlAddress);
+            ps.setString(1,address.getStreet());
+            ps.setString(2,address.getState());
+            ps.setString(3,address.getCity());
+            ps.setString(4,address.getCountry());
+            ps.setString(5,address.getZip());
+            ps.setInt(6, address_index);
+            return ps;
+        });
     }
 
     @Override
