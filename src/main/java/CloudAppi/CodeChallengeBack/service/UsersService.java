@@ -27,6 +27,7 @@ public class UsersService {
 
     public void createUser(User user){
         usersDao.createUser(user);
+    }
 
     public Optional<User> getUserById(int id){
         return usersDao.getUserById(id);
