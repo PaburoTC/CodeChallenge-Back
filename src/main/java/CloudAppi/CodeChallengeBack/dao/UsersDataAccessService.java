@@ -38,7 +38,13 @@ public class UsersDataAccessService implements IUsersDao{
 
     @Override
     public void createUser(User user) {
+        System.out.println(user.getAddress());
+        Address address = getAddres(user.getAddress()).orElse(null);
 
+        int address_id = (address==null) ? createAddress(user.getAddress()): address.getId();
+
+        final String sql = "INSERT INTO users (name,email,birthdate,address_id) VALUES (?,?,?,?)";
+        jdbcTemplate.update(sql, user.getName(), user.getEmail(), user.getBirthdate(), address_id);
     }
 
     @Override
@@ -71,5 +77,28 @@ public class UsersDataAccessService implements IUsersDao{
         }));
 
         return Optional.ofNullable(address);
+    }
+
+    private Optional<Address> getAddres(Address address){
+        final String sql_address = "SELECT * FROM address WHERE street = ? AND state = ? AND city = ? AND country = ? AND zip = ?";
+        Address address1 = jdbcTemplate.queryForObject(sql_address, new Object[]{address.getStreet(),address.getState(),address.getCity(),address.getCountry(),address.getZip()},
+                ((resultSet, i) -> {
+                    String street = resultSet.getString("street");
+                    String state = resultSet.getString("state");
+                    String city = resultSet.getString("city");
+                    String country = resultSet.getString("country");
+                    String zip = resultSet.getString("zip");
+                    int id = resultSet.getInt("id");
+                    Address addrss = new Address(street,state,city,country,zip);
+                    addrss.setId(id);
+                    return  addrss;
+        }));
+
+        return Optional.ofNullable(address1);
+    }
+
+    private int createAddress(Address address){
+        final String sql = "INSERT INTO address (street,state,city,country,zip) VALUES (?,?,?,?,?) RETURNING id";
+        return jdbcTemplate.update(sql, address.getStreet(),address.getState(),address.getCity(),address.getCountry(),address.getZip());
     }
 }

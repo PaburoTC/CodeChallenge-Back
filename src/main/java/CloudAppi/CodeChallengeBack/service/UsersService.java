@@ -22,4 +22,8 @@ public class UsersService {
     public List<User> getUsers(){
         return usersDao.getUsers();
     }
+
+    public void createUser(User user){
+        usersDao.createUser(user);
+    }
 }
