@@ -92,7 +92,21 @@ public class UsersDataAccessService implements IUsersDao{
 
     @Override
     public void deleteUserById(int id) {
+        int address_index = Objects.requireNonNull(getUserById(id).orElse(null)).getAddress().getId();
 
+        final String sqlUsers = "DELETE FROM users WHERE id = ?";
+        jdbcTemplate.update(connection -> {
+            PreparedStatement ps = connection.prepareStatement(sqlUsers);
+            ps.setInt(1, id);
+            return ps;
+        });
+
+        final String sqlAddress = "DELETE FROM address WHERE id = ?";
+        jdbcTemplate.update(connection -> {
+            PreparedStatement ps = connection.prepareStatement(sqlAddress);
+            ps.setInt(1, address_index);
+            return ps;
+        });
     }
 
     private Optional<Address> getAddressById(int id){
@@ -131,7 +145,7 @@ public class UsersDataAccessService implements IUsersDao{
     }
 
     /**
-     * Mi intención era que este método devolviera el su ID para poder relacionarlo con el usuario correspondiente.
+     * Mi intención era que este método devolviera el de la fila insertada ID para poder relacionarlo con el usuario correspondiente.
      * Lo he intentado mediante el uso de un KeyHolder pero no lo he logrado. Es por esto que para hallar el id hago
      * una segunda query para encontrar el último Address con las carácterísticas del que acabamos de insertar
      * @param address
