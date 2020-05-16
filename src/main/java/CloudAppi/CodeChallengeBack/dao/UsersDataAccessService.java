@@ -3,6 +3,7 @@ package CloudAppi.CodeChallengeBack.dao;
 import CloudAppi.CodeChallengeBack.model.Address;
 import CloudAppi.CodeChallengeBack.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
@@ -56,22 +57,30 @@ public class UsersDataAccessService implements IUsersDao{
     @Override
     public Optional<User> getUserById(int id) {
         final String sql = "SELECT * FROM users WHERE id = ?";
-        User user = jdbcTemplate.queryForObject(sql, new Object[]{id}, ((resultSet, i) -> {
-            String name = resultSet.getString("name");
-            String email = resultSet.getString("email");
-            Date birthdate = resultSet.getDate("birthdate");
-            int address_id = resultSet.getInt("address_id");
-            Optional<Address> address = getAddressById(address_id);
-            User u = new User(name,email,birthdate,address.orElse(null));
-            u.setId(id);
-            return u;
-        }));
+        User user;
+        try{
+            user = jdbcTemplate.queryForObject(sql, new Object[]{id}, ((resultSet, i) -> {
+                String name = resultSet.getString("name");
+                String email = resultSet.getString("email");
+                Date birthdate = resultSet.getDate("birthdate");
+                int address_id = resultSet.getInt("address_id");
+                Optional<Address> address = getAddressById(address_id);
+                User u = new User(name,email,birthdate,address.orElse(null));
+                u.setId(id);
+                return u;
+            }));
+        } catch (EmptyResultDataAccessException e){
+            user = null;
+        }
         return Optional.ofNullable(user);
     }
 
     @Override
     public void updateUserById(int id, User user) {
-        int address_index = Objects.requireNonNull(getUserById(id).orElse(null)).getAddress().getId();
+        User u = getUserById(id).orElse(null);
+        if(u == null) return;
+
+        int address_index = u.getAddress().getId();
         final String sqlUser = "UPDATE users SET name = ?, email = ?, birthdate = ? WHERE id = ?";
         jdbcTemplate.update(connection -> {
             PreparedStatement ps = connection.prepareStatement(sqlUser);
@@ -98,7 +107,10 @@ public class UsersDataAccessService implements IUsersDao{
 
     @Override
     public void deleteUserById(int id) {
-        int address_index = Objects.requireNonNull(getUserById(id).orElse(null)).getAddress().getId();
+        User u = getUserById(id).orElse(null);
+        if(u == null) return;
+
+        int address_index = u.getAddress().getId();
 
         final String sqlUsers = "DELETE FROM users WHERE id = ?";
         jdbcTemplate.update(connection -> {
