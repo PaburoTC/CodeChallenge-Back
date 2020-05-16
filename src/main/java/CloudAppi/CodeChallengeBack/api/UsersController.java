@@ -26,7 +26,7 @@ public class UsersController {
         return usersService.getUsers();
     }
 
-    @PostMapping(path = "createUsers")
+    @PostMapping(path = "createUser")
     public void createUser(User user){
         usersService.createUser(user);
     }
