@@ -4,17 +4,10 @@ import CloudAppi.CodeChallengeBack.model.Address;
 import CloudAppi.CodeChallengeBack.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.PreparedStatementCreator;
-import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
-import org.springframework.jdbc.core.namedparam.SqlParameterSource;
-import org.springframework.jdbc.support.GeneratedKeyHolder;
-import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
-import java.sql.Connection;
 import java.sql.Date;
 import java.sql.PreparedStatement;
-import java.sql.SQLException;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -38,7 +31,7 @@ public class UsersDataAccessService implements IUsersDao{
             String email = resultSet.getString("email");
             Date birthdate = resultSet.getDate("birthdate");
             int address_id = resultSet.getInt("address_id");
-            Optional<Address> address = getAddresById(address_id);
+            Optional<Address> address = getAddressById(address_id);
             User user = new User(name,email,birthdate,address.orElse(null));
             user.setId(id);
             return user;
@@ -62,7 +55,7 @@ public class UsersDataAccessService implements IUsersDao{
             String email = resultSet.getString("email");
             Date birthdate = resultSet.getDate("birthdate");
             int address_id = resultSet.getInt("address_id");
-            Optional<Address> address = getAddresById(address_id);
+            Optional<Address> address = getAddressById(address_id);
             User u = new User(name,email,birthdate,address.orElse(null));
             u.setId(id);
             return u;
@@ -102,7 +95,7 @@ public class UsersDataAccessService implements IUsersDao{
 
     }
 
-    private Optional<Address> getAddresById(int id){
+    private Optional<Address> getAddressById(int id){
         final String sql_address = "SELECT * FROM address WHERE id = ?";
         Address address = jdbcTemplate.queryForObject(sql_address, new Object[]{id}, ((resultSet, i) -> {
             String street = resultSet.getString("street");
