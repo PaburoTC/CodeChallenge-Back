@@ -22,6 +22,12 @@ public class UsersDataAccessService implements IUsersDao{
         this.jdbcTemplate = jdbcTemplate;
     }
 
+    /**
+     * Me hubiera gustado haber podido implementar estas queries con prepared statements, para evitar así posibles
+     * inyecciones de sql. Sin embargo no he encontrado la forma de realizarlo para los "SELECT", pero sí para el resto
+     * de queries.
+     * @return
+     */
     @Override
     public List<User> getUsers() {
         final String sql_user = "SELECT * FROM users";
