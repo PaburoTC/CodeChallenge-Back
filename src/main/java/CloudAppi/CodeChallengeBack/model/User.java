@@ -31,7 +31,7 @@ public class User {
     public User(@JsonProperty("name") String name,
                 @JsonProperty("email")String email,
                 @JsonProperty("birthDate")Date birthdate,
-                @JsonProperty("addres")Address address){
+                @JsonProperty("address")Address address){
         this.name = name;
         this.email = email;
         this.birthdate = birthdate;
