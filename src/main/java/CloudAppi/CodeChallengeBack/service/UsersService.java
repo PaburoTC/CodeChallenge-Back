@@ -57,6 +57,18 @@ public class UsersService {
         usersDao.deleteUserById(id);
     }
 
+    /**
+     * Personalmente soy partidario de guardar todos los datos cifrados, puesto que no cuesta nada
+     * y encubre la información de nuestros "usuarios". He usado AES-128 en modo CBC para cifrar los datos, pues tampoco
+     * son de gran importancia. Para datos más críticos, problemente sea mejor usar AES-256 una o dos veces
+     * @param user
+     * @throws NoSuchPaddingException
+     * @throws InvalidKeyException
+     * @throws NoSuchAlgorithmException
+     * @throws IllegalBlockSizeException
+     * @throws BadPaddingException
+     * @throws InvalidAlgorithmParameterException
+     */
     private void encryptUser(User user) throws NoSuchPaddingException, InvalidKeyException, NoSuchAlgorithmException, IllegalBlockSizeException, BadPaddingException, InvalidAlgorithmParameterException {
         user.setName(encrypt.encrypt(user.getName()));
         user.setEmail(encrypt.encrypt(user.getEmail()));

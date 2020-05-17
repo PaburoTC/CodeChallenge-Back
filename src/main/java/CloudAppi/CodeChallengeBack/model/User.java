@@ -6,6 +6,10 @@ import org.springframework.lang.NonNull;
 import javax.validation.constraints.NotBlank;
 import java.sql.Date;
 
+/**
+ * Clase para representar a los usuarios. He considerado oportuno separar las direcciones (Address) de los usuarios,
+ * tanto en Spring como en la base de datos. De esta forma, creo que se obtiene una relación más clara y concisa
+ */
 public class User {
 
 
